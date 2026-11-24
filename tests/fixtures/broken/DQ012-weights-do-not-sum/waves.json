@@ -1,0 +1,55 @@
+[
+  {
+    "id": "wave_01",
+    "enemy_ids": [
+      "enemy_grunt"
+    ],
+    "count": 8,
+    "drop_table": [
+      {
+        "item": "wpn_pistol",
+        "weight": 0.7
+      },
+      {
+        "item": "wpn_rifle",
+        "weight": 0.5
+      }
+    ]
+  },
+  {
+    "id": "wave_02",
+    "enemy_ids": [
+      "enemy_grunt",
+      "enemy_runner"
+    ],
+    "count": 14,
+    "drop_table": [
+      {
+        "item": "wpn_rifle",
+        "weight": 0.55
+      },
+      {
+        "item": "wpn_cannon",
+        "weight": 0.45
+      }
+    ]
+  },
+  {
+    "id": "wave_03",
+    "enemy_ids": [
+      "enemy_brute",
+      "enemy_warden"
+    ],
+    "count": 6,
+    "drop_table": [
+      {
+        "item": "wpn_cannon",
+        "weight": 0.8
+      },
+      {
+        "item": "wpn_lance",
+        "weight": 0.2
+      }
+    ]
+  }
+]

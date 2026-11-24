@@ -1,0 +1,41 @@
+[
+  {
+    "id": "abl_ignite",
+    "name": "Ignite",
+    "effect_id": "eff_burn",
+    "cooldown_s": 6.0,
+    "power_curve": [
+      10,
+      14,
+      12,
+      25,
+      32
+    ]
+  },
+  {
+    "id": "abl_mire",
+    "name": "Mire",
+    "effect_id": "eff_slow",
+    "cooldown_s": 9.5,
+    "power_curve": [
+      5,
+      5,
+      8,
+      12,
+      12
+    ]
+  },
+  {
+    "id": "abl_bulwark",
+    "name": "Bulwark",
+    "effect_id": "eff_shield",
+    "cooldown_s": 14.0,
+    "power_curve": [
+      20,
+      30,
+      45,
+      65,
+      90
+    ]
+  }
+]

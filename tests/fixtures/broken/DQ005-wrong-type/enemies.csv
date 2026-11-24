@@ -1,0 +1,5 @@
+id,name,hp,speed,tier
+enemy_grunt,Grunt,forty,2.5,1
+enemy_runner,Runner,25,4.0,1
+enemy_brute,Brute,180,1.4,3
+enemy_warden,Warden,420,1.1,5

@@ -1,0 +1,95 @@
+name: qa
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  tests:
+    name: pytest (python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.11', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install
+        run: python -m pip install --upgrade pip && python -m pip install -e ".[dev]"
+      - name: Tests with coverage
+        run: python -m pytest --cov=data_qa --cov-report=term-missing
+
+  lint:
+    name: ruff
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install ruff
+      - run: ruff check .
+      - run: ruff format --check .
+
+  self-check:
+    name: the broken fixtures really do fail
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e .
+
+      # A checker that cannot fail is not a checker. This job exercises the CLI as a
+      # process, so the exit-code contract is asserted the way a pipeline actually reads
+      # it rather than through a function return value.
+      - name: every broken fixture must exit 1
+        run: |
+          status=0
+          for dir in tests/fixtures/broken/*/; do
+            rule=$(basename "$dir" | cut -d- -f1)
+            python -m data_qa check "$dir" > /dev/null 2>&1
+            code=$?
+            if [ "$code" -ne 1 ]; then
+              echo "::error::$rule exited $code, expected 1"
+              status=1
+            else
+              echo "ok: $rule exited 1"
+            fi
+          done
+          exit $status
+
+      - name: each broken fixture must fire its own rule and no other
+        run: |
+          status=0
+          for dir in tests/fixtures/broken/*/; do
+            rule=$(basename "$dir" | cut -d- -f1)
+            fired=$(python -m data_qa check "$dir" --format json \
+              | python -c "import json,sys; print(','.join(sorted({f['rule'] for f in json.load(sys.stdin)['findings']})))")
+            if [ "$fired" != "$rule" ]; then
+              echo "::error::$rule fired [$fired]; a fixture must isolate one rule"
+              status=1
+            else
+              echo "ok: $rule fired only itself"
+            fi
+          done
+          exit $status
+
+      - name: the clean set must exit 0
+        run: python -m data_qa check tests/fixtures/clean
+
+      - name: a directory that is not there must exit 2, never 0
+        run: |
+          python -m data_qa check tests/fixtures/no-such-directory
+          code=$?
+          if [ "$code" -ne 2 ]; then
+            echo "::error::a missing directory exited $code, expected 2"
+            exit 1
+          fi
+          echo "ok: a run that could not start exits 2"

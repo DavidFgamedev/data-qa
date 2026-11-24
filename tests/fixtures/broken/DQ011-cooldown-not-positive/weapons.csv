@@ -1,0 +1,5 @@
+id,name,damage,cooldown_s,rarity
+wpn_pistol,Pistol,12,0.35,common
+wpn_rifle,Rifle,28,0,common
+wpn_cannon,Cannon,140,1.8,rare
+wpn_lance,Lance,310,2.6,epic

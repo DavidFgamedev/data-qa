@@ -1,0 +1,5 @@
+id,name,damage,rarity
+wpn_pistol,Pistol,12,common
+wpn_rifle,Rifle,28,common
+wpn_cannon,Cannon,140,rare
+wpn_lance,Lance,310,epic

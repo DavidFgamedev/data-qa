@@ -1,0 +1,17 @@
+[
+  {
+    "id": "eff_burn",
+    "name": "Burn",
+    "kind": "damage_over_time"
+  },
+  {
+    "id": "eff_slow",
+    "name": "Slow",
+    "kind": "movement"
+  },
+  {
+    "id": "eff_shield",
+    "name": "Shield",
+    "kind": "defense"
+  }
+]

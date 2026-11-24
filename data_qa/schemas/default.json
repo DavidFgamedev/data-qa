@@ -1,0 +1,80 @@
+{
+  "_comment": [
+    "The shape of one game's data tables. This is the example schema that ships with",
+    "the tool; point --schema at your own to check your own tables. The rules in",
+    "data_qa/rules.py are fixed, the schema they are applied to is not.",
+    "",
+    "Column types: string, integer, number, string_list, number_list, weight_table.",
+    "Constraints: required, min, max (inclusive), one_of, positive, non_decreasing,",
+    "references ('table.column'), weights_sum_to, tolerance."
+  ],
+
+  "tables": {
+    "weapons": {
+      "file": "weapons.csv",
+      "id": "id",
+      "columns": {
+        "id": { "type": "string", "required": true },
+        "name": { "type": "string", "required": true },
+        "damage": { "type": "integer", "required": true, "min": 1, "max": 9999 },
+        "cooldown_s": { "type": "number", "required": true, "positive": true },
+        "rarity": { "type": "string", "required": true, "one_of": ["common", "rare", "epic"] }
+      }
+    },
+
+    "enemies": {
+      "file": "enemies.csv",
+      "id": "id",
+      "columns": {
+        "id": { "type": "string", "required": true },
+        "name": { "type": "string", "required": true },
+        "hp": { "type": "integer", "required": true, "min": 1, "max": 100000 },
+        "speed": { "type": "number", "required": true, "positive": true },
+        "tier": { "type": "integer", "required": true, "min": 1, "max": 5 }
+      }
+    },
+
+    "effects": {
+      "file": "effects.json",
+      "id": "id",
+      "columns": {
+        "id": { "type": "string", "required": true },
+        "name": { "type": "string", "required": true },
+        "kind": {
+          "type": "string",
+          "required": true,
+          "one_of": ["damage_over_time", "movement", "defense"]
+        }
+      }
+    },
+
+    "abilities": {
+      "file": "abilities.json",
+      "id": "id",
+      "columns": {
+        "id": { "type": "string", "required": true },
+        "name": { "type": "string", "required": true },
+        "effect_id": { "type": "string", "required": true, "references": "effects.id" },
+        "cooldown_s": { "type": "number", "required": true, "positive": true },
+        "power_curve": { "type": "number_list", "required": true, "non_decreasing": true }
+      }
+    },
+
+    "waves": {
+      "file": "waves.json",
+      "id": "id",
+      "columns": {
+        "id": { "type": "string", "required": true },
+        "enemy_ids": { "type": "string_list", "required": true, "references": "enemies.id" },
+        "count": { "type": "integer", "required": true, "min": 1, "max": 500 },
+        "drop_table": {
+          "type": "weight_table",
+          "required": true,
+          "references": "weapons.id",
+          "weights_sum_to": 1.0,
+          "tolerance": 0.001
+        }
+      }
+    }
+  }
+}
