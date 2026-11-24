@@ -49,13 +49,16 @@ jobs:
       # A checker that cannot fail is not a checker. This job exercises the CLI as a
       # process, so the exit-code contract is asserted the way a pipeline actually reads
       # it rather than through a function return value.
+      # Every exit code is captured with `|| code=$?`. The step shell is `bash -e`, so a
+      # bare call would abort the step the moment data-qa exits 1, which is the exact
+      # thing this job exists to observe. The first run of this workflow died that way.
       - name: every broken fixture must exit 1
         run: |
           status=0
           for dir in tests/fixtures/broken/*/; do
             rule=$(basename "$dir" | cut -d- -f1)
-            python -m data_qa check "$dir" > /dev/null 2>&1
-            code=$?
+            code=0
+            python -m data_qa check "$dir" > /dev/null 2>&1 || code=$?
             if [ "$code" -ne 1 ]; then
               echo "::error::$rule exited $code, expected 1"
               status=1
@@ -86,8 +89,8 @@ jobs:
 
       - name: a directory that is not there must exit 2, never 0
         run: |
-          python -m data_qa check tests/fixtures/no-such-directory
-          code=$?
+          code=0
+          python -m data_qa check tests/fixtures/no-such-directory || code=$?
           if [ "$code" -ne 2 ]; then
             echo "::error::a missing directory exited $code, expected 2"
             exit 1
